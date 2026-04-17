@@ -1,13 +1,8 @@
-# Imports (Using the same for all files in the repo for consistency)
-import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy import stats
 import seaborn as sns
-import statsmodels.api as sm
 import statsmodels.formula.api as smf
-from statsmodels.stats.anova import AnovaRM
-from statsmodels.multivariate.manova import MANOVA
 from statsmodels.formula.api import mixedlm
 
 # Gernerate sample data for 2 conditions
@@ -25,14 +20,16 @@ df['Subject'] = range(1, len(df) + 1)
 df_melted = df.melt(id_vars=['Gender', 'Subject'], value_vars=['Dominant Hand', 'Non-dominant Hand'], var_name='Hand', value_name='Force')
 
 # Add Height to melted dataframe
-df_melted = df_melted.merge(df[['Subject', 'Height']], on='Subject', how='left')
+df_melted = df_melted.merge(df[['Subject', 'Height']]
+                            , on='Subject', how='left')
 
 # t-test
 t, p = stats.ttest_rel(df['Dominant Hand'], df['Non-dominant Hand'])
 print(f"Paired t-test: t={t:.3g}, p={p:.3g}")
 
 # Repeated measures ANOVA (using mixed effects model since AnovaRM doesn't support between-subject factors)
-model = mixedlm("Force ~ Hand * Gender", df_melted, groups=df_melted["Subject"])
+model = mixedlm("Force ~ Hand * Gender", df_melted
+                , groups=df_melted["Subject"])
 result = model.fit()
 print(result.summary())
 print("\nFixed effects p-values (3 significant figures):")
@@ -84,13 +81,15 @@ plt.ylabel('Mean Force (N)')
 plt.show()
 
 # Regression plots for Height vs Grip Strength
-fig, axes = plt.subplots(1, 2, figsize=(10, 5), sharey=True)
+fig, axes = plt.subplots(1, 2
+                         , figsize=(10, 5), sharey=True)
 sns.regplot(x='Height', y='Dominant Hand', data=df, ax=axes[0], scatter_kws={'alpha':0.6}, line_kws={'color':'red'})
 axes[0].set_title('Dominant Hand vs Height')
 axes[0].set_xlabel('Height (inches)')
 axes[0].set_ylabel('Grip Strength (N)')
 
-sns.regplot(x='Height', y='Non-dominant Hand', data=df, ax=axes[1], scatter_kws={'alpha':0.6}, line_kws={'color':'red'})
+sns.regplot(x='Height', y='Non-dominant Hand'
+            , data=df, ax=axes[1], scatter_kws={'alpha':0.6}, line_kws={'color':'red'})
 axes[1].set_title('Non-dominant Hand vs Height')
 axes[1].set_xlabel('Height (inches)')
 axes[1].set_ylabel('Grip Strength (N)')
