@@ -55,3 +55,76 @@ plt.ylim(bottom = 0)
 plt.xlabel('Strain')
 plt.ylabel('Stress (MPa)')
 plt.show()
+
+# Heart Valve Diameter
+diameters = [9.9568, 10.1854, 10.668, 9.2202, 11.2776, 10.5664, 10.541, 9.8298, 11.1252, 10.3632, 11.049, 10.3886]  # mm
+average_diameter = np.mean(diameters)
+flow_rates = [163.4329504, 87.55034978, 80.76628361] # mL/s
+flow_velocities = [100 * flow_rate / (np.pi * (average_diameter / 2) ** 2) for flow_rate in flow_rates]
+
+flow_rate_df = pd.DataFrame({
+    'Metric': 'Flow Rate',
+    'Flow Rate': flow_rates
+})
+
+flow_velocity_df = pd.DataFrame({
+    'Metric': 'Flow Velocity',
+    'Flow Velocity': flow_velocities
+})
+
+diameters_df = pd.DataFrame({
+    'Metric': 'Diameter',
+    'Diameter': diameters
+})
+
+print(f"Average Diameter of Heart Valve: {average_diameter:.4f} mm")
+print(f"Flow Velocities: {flow_velocities}")
+
+# Plots
+fig, axes = plt.subplots(1, 2, figsize=(12, 6))
+sns.barplot(data=flow_rate_df, ax=axes[0])
+axes[0].set_title('Flow Rate through Aorta during Systole')
+axes[0].set_ylabel('Flow Rate (mL/s)')
+sns.barplot(data=flow_velocity_df, ax=axes[1])
+axes[1].set_title('Flow Velocities through Aorta during Systole')
+axes[1].set_ylabel('Flow Velocity (cm/s)')
+plt.tight_layout()
+plt.suptitle('Flow Rates and Velocities through Aorta during Systole')
+plt.show()
+
+fig, axes = plt.subplots(2, 1, figsize=(8, 12))
+sns.barplot(data=diameters_df, orient='h', ax=axes[0])
+axes[0].set_title('Diameter of Heart Valve')
+axes[0].set_xlabel('Diameter (mm)')
+axes[0].set_xlim(0, 12)
+sns.histplot(data=diameters_df, x='Diameter', ax=axes[1], bins=5)
+axes[1].set_title('Distribution of Heart Valve Diameters')
+axes[1].set_xlabel('Diameter (mm)')
+axes[1].set_xlim(0, 12)
+max_y = int(axes[1].get_ylim()[1])
+axes[1].set_yticks(range(0, max_y + 1, 1))
+plt.tight_layout()
+plt.show()
+
+water_lost = [5.777164757, 5.400707906, 4.937376396, 3.706652075]   # mL lost 15 seconds after no beat
+
+water_lost_df = pd.DataFrame({
+    'Metric': 'Water Lost',
+    'Water Lost (mL)': water_lost
+})
+
+regurgitation_rate_df = pd.DataFrame({
+    'Metric': 'Regurgitation Rate',
+    'Regurgitation Rate': [i / 15 for i in water_lost]  # mL/s regurgitation rate
+})
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 6))
+sns.barplot(data=water_lost_df, ax=axes[0])
+axes[0].set_title('Water Lost 15 Seconds After No Beat')
+axes[0].set_ylabel('Water Lost (mL)')
+sns.barplot(data=regurgitation_rate_df, ax=axes[1])
+axes[1].set_title('Regurgitation Rate')
+axes[1].set_ylabel('Regurgitation Rate (mL/s)')
+plt.tight_layout()
+plt.suptitle('Water Loss and Regurgitation Rate After No Beat')
+plt.show()
